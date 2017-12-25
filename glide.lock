@@ -1,0 +1,6 @@
+hash: 284a62e9538e70a884fb47bd2260fb4d871e8f7da47246f178098d8446f76de2
+updated: 2017-12-24T17:25:45.250769929+07:00
+imports:
+- name: github.com/ybbus/jsonrpc
+  version: af3b3899128285b8a17568bb7936824759a12873
+testImports: []
