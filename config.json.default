@@ -1,0 +1,14 @@
+{
+  "storages": {
+    "logging": {
+      "enable": false,
+      "logFile": "/var/log/eth/scanner.log",
+      "debug": false
+    },
+    "postgres": {
+      "postgresConnectionString":"host=pg user=ethscanner dbname=postgres password=password sslmode=disable",
+      "maxOpenConnections" : 20,
+      "maxIdleConnections" : 20
+    },
+  },
+}

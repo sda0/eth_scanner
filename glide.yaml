@@ -1,3 +1,5 @@
-package: .
+package: github.com/sda/eth_scanner
 import:
 - package: github.com/ybbus/jsonrpc
+- package: github.com/lib/pq
+- package: github.com/jmoiron/sqlx

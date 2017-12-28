@@ -1,6 +1,14 @@
-hash: 284a62e9538e70a884fb47bd2260fb4d871e8f7da47246f178098d8446f76de2
-updated: 2017-12-24T17:25:45.250769929+07:00
+hash: 6f1fcddc50590b93a6bb84026760866bb762c641e865454aec51d68e272f8056
+updated: 2017-12-28T18:55:10.4863179+07:00
 imports:
+- name: github.com/jmoiron/sqlx
+  version: 398dd5876282499cdfd4cb8ea0f31a672abe9495
+  subpackages:
+  - reflectx
+- name: github.com/lib/pq
+  version: 165a3529e799da61ab10faed1fabff3662d6193f
+  subpackages:
+  - oid
 - name: github.com/ybbus/jsonrpc
   version: af3b3899128285b8a17568bb7936824759a12873
 testImports: []
