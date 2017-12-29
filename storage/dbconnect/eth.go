@@ -1,4 +1,4 @@
-package db
+package dbconnect
 
 import (
 	"errors"
@@ -6,8 +6,8 @@ import (
 )
 
 type EthConnection struct {
-	cfg     EthConfig
-	client  *jsonrpc.RPCClient
+	cfg    EthConfig
+	client *jsonrpc.RPCClient
 }
 
 type EthConfig struct {

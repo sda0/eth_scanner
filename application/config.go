@@ -1,13 +1,13 @@
 package application
 
 import (
+	"../storage/dbconnect"
 	"encoding/json"
-	"../storage/db"
 )
 
 type Config struct {
-	Storages	db.StoragesConfig	`json:"storages"`
-	Tracing		bool 				`json:"trace,omitempty"`
+	Storages dbconnect.StoragesConfig `json:"storages"`
+	Tracing  bool                     `json:"trace,omitempty"`
 }
 
 func (c *Config) Validate() error {

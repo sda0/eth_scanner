@@ -1,8 +1,8 @@
-package db
+package dbconnect
 
 type StoragesConfig struct {
-	Postgres  PostgresConfig  `json:"postgres"`
-	Eth     EthConfig     `json:"eth" bson:"eth"`
+	Postgres PostgresConfig `json:"postgres"`
+	Eth      EthConfig      `json:"eth" bson:"eth"`
 }
 
 func (sc *StoragesConfig) Validate() error {

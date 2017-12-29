@@ -1,9 +1,9 @@
-package db
+package dbconnect
 
 import (
+	"errors"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
-	"errors"
 )
 
 type PostgresConnection struct {
@@ -13,7 +13,7 @@ type PostgresConnection struct {
 }
 
 type PostgresConfig struct {
-	Disabled                 bool `json:"disabled"`
+	Disabled                 bool   `json:"disabled"`
 	PostgresConnectionString string `json:"postgresConnectionString"`
 	MaxOpenConnection        int    `json:"maxOpenConnections"`
 	MaxIdleConnection        int    `json:"maxIdleConnections"`
