@@ -1,12 +1,12 @@
-hash: 6f1fcddc50590b93a6bb84026760866bb762c641e865454aec51d68e272f8056
-updated: 2017-12-28T18:55:10.4863179+07:00
+hash: 8e0d4b813e868784874cc6ae472a7eaacb85cc23df94896b086c4bd7e55da048
+updated: 2018-01-09T03:21:15.677590321+07:00
 imports:
 - name: github.com/jmoiron/sqlx
-  version: 398dd5876282499cdfd4cb8ea0f31a672abe9495
+  version: de8647470aafe4854c976707c431dbe1eb2822c6
   subpackages:
   - reflectx
 - name: github.com/lib/pq
-  version: 165a3529e799da61ab10faed1fabff3662d6193f
+  version: 83612a56d3dd153a94a629cd64925371c9adad78
   subpackages:
   - oid
 - name: github.com/ybbus/jsonrpc

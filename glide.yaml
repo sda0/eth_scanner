@@ -1,4 +1,4 @@
-package: github.com/sda/eth_scanner
+package: github.com/sda0/eth_scanner
 import:
 - package: github.com/ybbus/jsonrpc
 - package: github.com/lib/pq

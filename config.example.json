@@ -1,0 +1,15 @@
+{
+  "storages": {
+    "postgres": {
+      "connectionString":"host=db user=postgres dbname=postgres password=passphrase sslmode=disable",
+      "maxOpenConnections" : 20,
+      "maxIdleConnections" : 20
+    },
+    "geth": {
+      "disabled": false,
+      "endpoint": "http://ethtest:9000/"
+    }
+  },
+  "debug": true,
+  "ApiAddress": ":8181"
+}

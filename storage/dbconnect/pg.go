@@ -13,17 +13,17 @@ type PostgresConnection struct {
 }
 
 type PostgresConfig struct {
-	Disabled                 bool   `json:"disabled"`
-	PostgresConnectionString string `json:"postgresConnectionString"`
-	MaxOpenConnection        int    `json:"maxOpenConnections"`
-	MaxIdleConnection        int    `json:"maxIdleConnections"`
+	Disabled          bool   `json:"disabled"`
+	ConnectionString  string `json:"connectionString"`
+	MaxOpenConnection int    `json:"maxOpenConnections"`
+	MaxIdleConnection int    `json:"maxIdleConnections"`
 }
 
 func (pc *PostgresConfig) Validate() error {
 	if pc.Disabled {
 		return nil
 	}
-	if pc.PostgresConnectionString == "" {
+	if pc.ConnectionString == "" {
 		return errors.New("PostgresConfig error: connection string not set")
 	}
 
@@ -34,15 +34,15 @@ func (postgresConnection *PostgresConnection) Connect() (err error) {
 	if postgresConnection.cfg.Disabled {
 		return errors.New("postgres connection config disabled")
 	}
-	postgresConnection.db, err = sqlx.Connect("postgres", postgresConnection.cfg.PostgresConnectionString)
+	postgresConnection.db, err = sqlx.Connect("postgres", postgresConnection.cfg.ConnectionString)
+	if err != nil {
+		panic(err)
+	}
 	if postgresConnection.cfg.MaxOpenConnection > 0 {
 		postgresConnection.db.SetMaxOpenConns(postgresConnection.cfg.MaxOpenConnection)
 	}
 	if postgresConnection.cfg.MaxIdleConnection > 0 {
 		postgresConnection.db.SetMaxIdleConns(postgresConnection.cfg.MaxIdleConnection)
-	}
-	if err != nil {
-		return
 	}
 	err = postgresConnection.db.Ping()
 	return

@@ -1,7 +1,7 @@
 package storage
 
 import (
-	"./dbconnect"
+	"github.com/sda0/eth_scanner/storage/dbconnect"
 )
 
 type Manager struct {

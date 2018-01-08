@@ -2,10 +2,11 @@ package application
 
 import (
 	"errors"
-	"../storage"
-	"../tracing"
+	"github.com/sda0/eth_scanner/storage"
+	"github.com/sda0/eth_scanner/storage/model"
 	"log"
-	"github.com/sda0/eth_scanner/eth"
+	"math"
+	"time"
 )
 
 type Application struct {
@@ -24,9 +25,6 @@ func NewApplication(cfg Config) (*Application, error) {
 	}
 	app.storageManager = sm
 
-	//set debug from config
-	tracing.SetTracing(cfg.Tracing)
-
 	return app, nil
 }
 
@@ -44,22 +42,28 @@ func (a *Application) Stop() {
 	a.StorageManager().Close()
 }
 
-func (a *Application) Start() error {
-	ethReader := eth.GetEth()
-	max := ethReader.GetLastBlockNumber()
-	i := pg.GetLastBlockNumber
-	for ;i<max; i++ {
-		transactions := ethReader.GetBlock(i)
-		pg.transactionBegin
-		defer pg.transactionRollback
-		for transaction := range transactions {
-			pg.insert(transaction)
+func (a *Application) Start() (err error) {
+	var nextBlock, maxBlock int64
+	var affected int
+	var block model.Block
+	for {
+		nextBlock = a.storageManager.GetLocalDB().GetLastBlockNumber() + 1
+		maxBlock = a.storageManager.GetBlockchain().GetLastBlockNumber()
+
+		if a.config.Debug {
+			nextBlock = int64(math.Max(float64(maxBlock-10000), float64(nextBlock))) //only last 10 000 blocks
 		}
-		pg.transactionCommit
+
+		log.Printf("Eth last block %d, next block to parse %d", maxBlock, nextBlock)
+		for ; nextBlock <= maxBlock; nextBlock++ {
+			block = a.storageManager.GetBlockchain().GetBlock(nextBlock)
+			affected, err = a.storageManager.GetLocalDB().Save(block)
+			if err != nil {
+				return
+			}
+			log.Printf("Block %d (transaction count %d) imported to local db ", nextBlock, affected)
+		}
+
+		time.Sleep(2 * time.Second)
 	}
-
-	return a.HttpApplication.ListenAndServe()
-}
-
-func (a *Application) ReopenLogs() {
 }

@@ -20,7 +20,7 @@ func (ec *EthConfig) Validate() error {
 		return nil
 	}
 	if ec.Endpoint == "" {
-		return errors.New("ethConfig error: endpoint string not set")
+		return errors.New("ethConfig error: endpoint not set")
 	}
 
 	return nil

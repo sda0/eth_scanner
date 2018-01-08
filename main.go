@@ -1,24 +1,23 @@
 package main
 
 import (
+	"encoding/json"
+	"errors"
+	_ "expvar"
 	"flag"
 	"fmt"
-	"os"
-	"syscall"
-	"errors"
+	"github.com/sda0/eth_scanner/api"
+	"github.com/sda0/eth_scanner/application"
 	"io/ioutil"
-	"encoding/json"
+	"os"
 	"os/signal"
-	_ "expvar"
-	"./application"
+	"syscall"
 )
 
-
-var cfg application.Config
-
+var cfgScanner application.Config
+var cfgApi api.Config
 
 func main() {
-
 	cfgFilePath := flag.String("cfg", "", "Path to configuration file")
 	onlyValidateCfg := flag.Bool("validate", false, "validate configuration file and stop")
 
@@ -26,40 +25,48 @@ func main() {
 
 	err := openConfig(*cfgFilePath)
 	if err != nil {
-		fmt.Println("Unable to open application config: " + err.Error())
+		fmt.Println("Unable to open config: " + err.Error())
 		os.Exit(2)
 	}
+
 	if *onlyValidateCfg {
 		fmt.Println("Configuration file valid")
 		os.Exit(0)
 	}
 
-	app, err := application.NewApplication(cfg)
+	app, err := application.NewApplication(cfgScanner)
 	if err != nil {
 		fmt.Println("Fatal error: " + err.Error())
 		os.Exit(1)
 	}
 	defer app.Stop()
 
-	//при принудительном завершении проиложения defer не работает
-	go func() {
-		sigchan := make(chan os.Signal)
-		signal.Notify(sigchan, syscall.SIGTERM)
-		<-sigchan
-		app.Stop()
-		os.Exit(0)
-	}()
+	apiServer, err := api.NewServer(cfgApi)
+	if err != nil {
+		fmt.Println("Fatal error: " + err.Error())
+		os.Exit(1)
+	}
+	defer apiServer.Stop()
 
 	go func() {
-		for {
-			sigchan := make(chan os.Signal)
-			signal.Notify(sigchan, syscall.SIGUSR1)
-			<-sigchan
-			app.ReopenLogs()
+		err = app.Start()
+		if err != nil {
+			fmt.Println("Fatal error: " + err.Error())
+			os.Exit(1)
 		}
 	}()
 
-	err = app.Start()
+	//при принудительном завершении defer не работает
+	go func() {
+		sigchan := make(chan os.Signal)
+		signal.Notify(sigchan, syscall.SIGTERM, syscall.SIGINT)
+		<-sigchan
+		app.Stop()
+		apiServer.Stop()
+		os.Exit(0)
+	}()
+
+	err = apiServer.Start()
 	if err != nil {
 		fmt.Println("Fatal error: " + err.Error())
 		os.Exit(1)
@@ -71,16 +78,23 @@ func openConfig(filename string) error {
 		return errors.New("please, specify configuration file path: -cfg=PATH")
 	}
 
-	file, e := ioutil.ReadFile(filename)
-	if e != nil {
-		return e
+	file, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return err
 	}
 
-	if e := json.Unmarshal(file, &cfg); e != nil {
-		return e
+	if err := json.Unmarshal(file, &cfgScanner); err != nil {
+		return err
 	}
-	if e := cfg.Validate(); e != nil {
-		return e
+	if err := cfgScanner.Validate(); err != nil {
+		return err
+	}
+
+	if err := json.Unmarshal(file, &cfgApi); err != nil {
+		return err
+	}
+	if err := cfgApi.Validate(); err != nil {
+		return err
 	}
 
 	return nil
