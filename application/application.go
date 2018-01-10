@@ -43,7 +43,7 @@ func (a *Application) Stop() {
 }
 
 func (a *Application) Start() (err error) {
-	var nextBlock, maxBlock int64
+	var nextBlock, maxBlock model.BlockNumber
 	var affected int
 	var block model.Block
 	for {
@@ -51,7 +51,7 @@ func (a *Application) Start() (err error) {
 		maxBlock = a.storageManager.GetBlockchain().GetLastBlockNumber()
 
 		if a.config.Debug {
-			nextBlock = int64(math.Max(float64(maxBlock-10000), float64(nextBlock))) //only last 10 000 blocks
+			nextBlock = model.BlockNumber(math.Max(float64(maxBlock-10000), float64(nextBlock))) //only last 10 000 blocks
 		}
 
 		log.Printf("Eth last block %d, next block to parse %d", maxBlock, nextBlock)

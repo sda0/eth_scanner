@@ -11,23 +11,23 @@ type LocalDB struct {
 	connect *dbconnect.PostgresConnection
 }
 
-func (db LocalDB) GetLastBlockNumber() (blockNumber int64) {
+func (db LocalDB) GetLastBlockNumber() (blockNumber model.BlockNumber) {
 	connection, err := db.connect.GetConnection()
 	if err != nil {
 		panic(err)
 	}
 	rows, err := connection.Queryx(`SELECT coalesce((SELECT max(blockNumber) FROM transactions),0)`)
-	defer rows.Close()
-
 	if err != nil {
 		panic(err)
 	}
+	defer rows.Close()
+
 	for rows.Next() {
 		values, err := rows.SliceScan()
 		if err != nil {
 			panic(err)
 		}
-		blockNumber = values[0].(int64)
+		blockNumber = model.BlockNumber(values[0].(int64))
 		break
 	}
 	return
@@ -68,10 +68,10 @@ func (db LocalDB) Save(block model.Block) (affected int, err error) {
 	return
 }
 
-func (db LocalDB) GetIncomeTransactionsSinceBlock(start int64, finish int64) (resultJson string) {
+func (db LocalDB) GetLastSinceBlock(start model.BlockNumber, max model.BlockNumber) (resultJson string) {
 
-	if start > finish-3 {
-		start = finish - 3
+	if start > max-3 {
+		start = max - 3
 	}
 	// @todo избавиться от if для cpu prediction
 
@@ -92,7 +92,7 @@ func (db LocalDB) GetIncomeTransactionsSinceBlock(start int64, finish int64) (re
 		  WHERE blockNumber >= %d AND "to"<>''
 		  ORDER BY blockNumber DESC
 		  LIMIT 1000
-		) as t`, finish, start)
+		) as t`, max, start)
 
 	//log.Println(query)
 

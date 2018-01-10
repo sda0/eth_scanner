@@ -67,10 +67,11 @@ func (a *Server) sendEth(response http.ResponseWriter, r *http.Request) {
 
 func (a *Server) getLast(response http.ResponseWriter, r *http.Request) {
 	cache := storage.GetCache()
+	var s string
+//	s, err := cache.GetLastTransactions
+//	if err != nil {
+		s = a.storageManager.GetLocalDB().GetLastSinceBlock(cache.GetLastRegistry(), cache.GetMaxBlockNumber())
+//	}
 
-	s := a.storageManager.GetLocalDB().GetIncomeTransactionsSinceBlock(cache.GetLastRegistry(), cache.GetMaxBlockNumber())
-	cache.SetGetLastResult(s)
-	cache.SetGetLastRegistry(cache.GetMaxBlockNumber())
-
-	response.Write([]byte(cache.GetLastResult()))
+	response.Write([]byte(s))
 }

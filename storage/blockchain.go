@@ -13,7 +13,7 @@ type Blockchain struct {
 	connect *dbconnect.EthConnection
 }
 
-func (bc Blockchain) GetLastBlockNumber() int64 {
+func (bc Blockchain) GetLastBlockNumber() (blockNumber model.BlockNumber) {
 	client, err := bc.connect.GetRPCClient()
 	if err != nil {
 		panic(err)
@@ -30,21 +30,19 @@ func (bc Blockchain) GetLastBlockNumber() int64 {
 	}
 
 	result, _ := strconv.ParseInt(res[2:], 16, 64)
+	blockNumber = model.BlockNumber(result)
+	GetCache().SetMaxBlockNumber(blockNumber)
 
-	GetCache().SetMaxBlockNumber(result)
-
-	return result
+	return blockNumber
 }
 
-func (bc Blockchain) GetBlock(blockId int64) (result model.Block) {
+func (bc Blockchain) GetBlock(blockNumber model.BlockNumber) (result model.Block) {
 	client, err := bc.connect.GetRPCClient()
 	if err != nil {
 		panic(err)
 	}
 
-	blockNumber := "0x" + strconv.FormatInt(blockId, 16)
-
-	response, err := client.Call("eth_getBlockByNumber", blockNumber, true)
+	response, err := client.Call("eth_getBlockByNumber", blockNumber.ToHex(), true)
 	if err != nil {
 		panic(err)
 	}

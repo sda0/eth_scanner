@@ -2,12 +2,12 @@ package storage
 
 import (
 	"sync"
+	"github.com/sda0/eth_scanner/storage/model"
 )
 
 type cache struct {
-	getLastRegistry int64
-	getLastResult   string
-	maxBlockNumber  int64
+	getLastRegistry model.BlockNumber
+	maxBlockNumber  model.BlockNumber
 }
 
 var cacheInstance *cache
@@ -20,32 +20,19 @@ func GetCache() *cache {
 	return cacheInstance
 }
 
-func (c *cache) SetMaxBlockNumber(i int64) *cache {
+func (c *cache) SetMaxBlockNumber(i model.BlockNumber) *cache {
 	if c.maxBlockNumber < i {
 		c.maxBlockNumber = i
 	}
 	return c
 }
 
-func (c *cache) SetGetLastRegistry(i int64) *cache {
-	c.getLastRegistry = i
-	return c
-}
-
-func (c *cache) SetGetLastResult(s string) *cache {
-	c.getLastResult = s
-	return c
-}
-
-func (c *cache) GetMaxBlockNumber() int64 {
+func (c *cache) GetMaxBlockNumber() model.BlockNumber {
 	return c.maxBlockNumber
 }
 
-func (c *cache) GetLastRegistry() int64 {
+func (c *cache) GetLastRegistry() model.BlockNumber {
 	return c.getLastRegistry
 }
 
-func (c *cache) GetLastResult() string {
-	return c.getLastResult
-}
 
