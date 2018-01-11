@@ -1,0 +1,50 @@
+version: '3.1'
+
+services:
+
+  db:
+    image: postgres
+#    restart: always
+    environment:
+      POSTGRES_PASSWORD: passphrase
+    volumes:
+      - ./storage/backup:/data/postgres/backup
+      - pg_data:/var/lib/postgresql/
+
+  adminer:
+    image: adminer
+#    restart: always
+    ports:
+      - 8080:8080
+
+
+  ethtest:
+    image: ethereum/client-go
+    command: "--rpc --rpcaddr '0.0.0.0' --rpcport '9000' --testnet"
+#--etherbase '0x18a3462427bcc9133bb46e88bcbe39cd7ef0e761'"
+#    restart: always
+    environment:
+      VIRTUAL_HOST: "localhost"
+      VIRTUAL_PORT: "9000"
+    volumes:
+      - $HOME/.ethereum:/root/.ethereum
+    ports:
+      - "9000"
+
+  scanner:
+    image: golang:1.9.2-alpine
+    volumes:
+      - .:/go/src/github.com/sda0/eth_scanner
+    environment:
+      GOPATH: "/go"
+    working_dir: /go/src/github.com/sda0/eth_scanner
+    command: "bin/linux/ethScanner --cfg=config.example.json"
+    ports:
+      - 8181:8181
+    links:
+      - db
+      - ethtest
+
+volumes:
+    pg_data:
+      external: false
