@@ -1,4 +1,9 @@
 # eth scanner
+## Clone
+```
+git clone https://github.com/sda0/eth_scanner
+cd eth_scanner
+```
 ## Specify path to ethereum (optional)
 If you already have ethtest synced on your PC - specify path to .ethereum folder
 By default it is $HOME/.ethereum
