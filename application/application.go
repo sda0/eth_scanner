@@ -61,9 +61,11 @@ func (a *Application) Start() (err error) {
 			if err != nil {
 				return
 			}
+			/* @todo сделать кеш мидлварью */
+			storage.GetCache().SaveLastTransactions(block)
 			log.Printf("Block %d (transaction count %d) imported to local db ", nextBlock, affected)
-		}
 
+		}
 		time.Sleep(2 * time.Second)
 	}
 }

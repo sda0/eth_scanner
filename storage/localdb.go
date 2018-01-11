@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"github.com/sda0/eth_scanner/storage/dbconnect"
 	"github.com/sda0/eth_scanner/storage/model"
-	"log"
 )
+
+const getLastLimit = 1000
+const getLastRequiredRows = 3
 
 type LocalDB struct {
 	connect *dbconnect.PostgresConnection
@@ -70,8 +72,8 @@ func (db LocalDB) Save(block model.Block) (affected int, err error) {
 
 func (db LocalDB) GetLastSinceBlock(start model.BlockNumber, max model.BlockNumber) (resultJson string) {
 
-	if start > max-3 {
-		start = max - 3
+	if start > max-getLastRequiredRows {
+		start = max - getLastRequiredRows
 	}
 	// @todo избавиться от if для cpu prediction
 
@@ -91,8 +93,8 @@ func (db LocalDB) GetLastSinceBlock(start model.BlockNumber, max model.BlockNumb
 		  FROM transactions
 		  WHERE blockNumber >= %d AND "to"<>''
 		  ORDER BY blockNumber DESC
-		  LIMIT 1000
-		) as t`, max, start)
+		  LIMIT %d
+		) as t`, max, start, getLastLimit)
 
 	//log.Println(query)
 
@@ -100,13 +102,15 @@ func (db LocalDB) GetLastSinceBlock(start model.BlockNumber, max model.BlockNumb
 	if err != nil {
 		panic(err)
 	}
-	log.Println(rows)
+
 	for rows.Next() {
 		values, err := rows.SliceScan()
 		if err != nil {
 			panic(err)
 		}
 		resultJson = fmt.Sprintf("%s", values[0])
+
+		GetCache().SetLastCursor(max)
 	}
 	return
 }

@@ -25,6 +25,10 @@ func (t Transaction) GetValue() (value int64) {
 	return
 }
 
+func (t Transaction) GetValueEth() (value float64) {
+	return float64(t.GetValue()) / 1000000000000000000
+}
+
 func (t Transaction) GetFrom() (from string) {
 	if len(t.From) > 2 && t.From[0:2] == "0x" {
 		from = t.From[2:]
