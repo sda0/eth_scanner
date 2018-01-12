@@ -9,7 +9,7 @@ If you already have ethtest synced on your PC - specify path to .ethereum folder
 By default it is $HOME/.ethereum
 
 ```
-vim docker-compose
+vim docker-compose.yml
 ```
 
 ## Run geth and scanner
